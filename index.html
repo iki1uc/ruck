@@ -52,6 +52,28 @@
 
 <body>
 
+  <div id="ruckDashboard" style="
+  background:#0f1115;
+  color:#e6e9ef;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #2a2e36;
+  font-family:Consolas, monospace;
+">
+  <h2 style="margin-bottom:10px;">⚡ IKI1UC · FIREICE · Build Dashboard</h2>
+  <p style="font-size:12px;color:#8a8f9a;margin-bottom:20px;">
+    Build‑Übersicht für MCFLY‑ORBIT · ALL NATURA · 3‑9‑81
+  </p>
+
+  <input id="ruckSearch" placeholder="🔍 Modul suchen…" 
+    style="width:100%;padding:10px;background:#1a1d23;border:1px solid #2a2e36;
+           border-radius:8px;color:#e6e9ef;margin-bottom:20px;">
+
+  <div id="ruckModules"></div>
+</div>
+
+
+  
 <h1>⚡ IKI1UC · RUN21 · Aggregator Dashboard</h1>
 <h2>Borg‑Operator · FIRE / ICE / ORT · RAW / ROM / RAM / CPU / GPU · NC · quant · continuum</h2>
 
@@ -153,6 +175,80 @@ function renderAll(filter="") {
 document.getElementById("search").addEventListener("input", e => renderAll(e.target.value));
 
 Aggregator.init().then(() => renderAll());
+// =====================================================
+// RUCK · RUN21 · FIREICE Aggregator
+// =====================================================
+
+const RUCK = {
+  pools: ["", "api", "markt", "ort", "pipeline", "engine", "basis", "analyse", "raum"],
+  modules: [],
+
+  async init() {
+    await this.scan();
+    this.render();
+  },
+
+  async scan() {
+    const files = [
+      "3hit90.js","3×1.js","3×3.js","9×9.js",
+      "pipe.pipeline.js","raid.pipeline.js","stage.pipeline.js",
+      "atom.raw.js","cpu.raw.js","ram.raw.js","rom.raw.js","gpu.raw.js",
+      "NC.room","ANKER.room","TMP.tmp",
+      "quant-triangle-analysis.json","continuum-reality.json"
+    ];
+
+    this.modules = files.map(f => ({
+      name: f,
+      path: this.detectPool(f),
+      category: this.detectCategory(f),
+      status: "online"
+    }));
+  },
+
+  detectPool(file) {
+    if (file.includes("pipeline")) return "pipeline/";
+    if (file.includes("raw")) return "markt/";
+    if (file.includes("room") || file.includes("tmp")) return "raum/";
+    if (file.includes("continuum") || file.includes("quant")) return "analyse/";
+    return "ort/";
+  },
+
+  detectCategory(file) {
+    if (file.includes("pipeline")) return "fire";
+    if (file.includes("raw")) return "ice";
+    if (file.includes("room") || file.includes("tmp")) return "ort";
+    if (file.includes("quant")) return "quant";
+    if (file.includes("continuum")) return "cont";
+    return "ort";
+  },
+
+  render() {
+    const search = document.getElementById("ruckSearch").value.toLowerCase();
+    const list = this.modules.filter(m => m.name.toLowerCase().includes(search));
+
+    document.getElementById("ruckModules").innerHTML = list.map(m => `
+      <div style="padding:8px 0;border-bottom:1px solid #2a2e36;
+                  display:flex;justify-content:space-between;">
+        <span>${m.name}<br><small>${m.path}</small></span>
+        <button onclick="RUCK.run('${m.name}')" 
+          style="background:#4da6ff;color:#000;border:none;padding:4px 10px;
+                 border-radius:6px;font-size:12px;cursor:pointer;">
+          Start
+        </button>
+      </div>
+    `).join('');
+  },
+
+  run(name) {
+    const out = document.createElement("div");
+    out.style.marginTop = "10px";
+    out.innerHTML = `<strong>RUN21:</strong> ${name} gestartet…`;
+    document.getElementById("ruckDashboard").appendChild(out);
+  }
+};
+
+document.getElementById("ruckSearch").addEventListener("input", () => RUCK.render());
+RUCK.init();
 </script>
 
 </body>
