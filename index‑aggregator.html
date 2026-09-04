@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKI1UC · RUN21 · Aggregator Pipeline UI</title>
+
+<style>
+  body { background:#0f1115; color:#e6e9ef; font-family:Consolas, monospace; padding:20px; }
+  h1 { text-align:center; font-size:24px; margin-bottom:10px; }
+  h2 { font-size:14px; margin-bottom:10px; color:#8a8f9a; }
+
+  .wrap { max-width:1300px; margin:0 auto; }
+
+  .panel {
+    background:#1a1d23;
+    border:1px solid #2a2e36;
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:20px;
+  }
+
+  .module {
+    padding:6px 0;
+    border-bottom:1px solid #2a2e36;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .module:last-child { border-bottom:none; }
+
+  .status { width:10px; height:10px; border-radius:50%; }
+  .online { background:#4da6ff; }
+  .offline { background:#ff4d4d; }
+  .build { background:#ffd700; animation:pulse 1s infinite alternate; }
+
+  @keyframes pulse { from{opacity:0.4} to{opacity:1} }
+
+  .btn {
+    background:#4da6ff;
+    color:#000;
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    border:none;
+  }
+  .btn:hover { background:#77c3ff; }
+</style>
+</head>
+
+<body>
+
+<h1>⚡ IKI1UC · RUN21 · Aggregator Pipeline Dashboard</h1>
+
+<div class="wrap">
+
+  <div class="panel">
+    <h2>🔥 Nutzbare Pipeline‑Module (api + markt)</h2>
+    <div id="pipelineList"></div>
+  </div>
+
+  <div class="panel">
+    <h2>📦 Aggregat‑Status</h2>
+    <div id="aggStatus"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { Aggregator } from "./aggregator.js";
+
+// ===============================================
+// PIPELINE‑STARTER — echte Nutzbarkeit
+// ===============================================
+function startPipeline(mod) {
+  console.log("RUN21 · Pipeline gestartet:", mod.name);
+
+  // Simulierter Pipeline‑Start
+  const out = document.createElement("div");
+  out.style.marginTop = "10px";
+  out.innerHTML = `
+    <strong>Pipeline gestartet:</strong> ${mod.name}<br>
+    Pfad: ${mod.path}<br>
+    Pool: ${mod.pool}<br>
+    Status: RUNNING…
+  `;
+  document.getElementById("aggStatus").appendChild(out);
+}
+
+// ===============================================
+// RENDER PIPELINE MODULES
+// ===============================================
+function renderPipelines(filter="") {
+  const f = filter.toLowerCase();
+
+  const pipelineMods = Aggregator.modules.filter(m =>
+    m.name.toLowerCase().includes("pipeline") ||
+    m.path.toLowerCase().includes("pipeline")
+  );
+
+  document.getElementById("pipelineList").innerHTML =
+    pipelineMods.map(m => `
+      <div class="module">
+        <span>${m.name}<br><small>${m.path}</small></span>
+        <span class="status ${m.status}"></span>
+        <button class="btn" onclick='startPipeline(${JSON.stringify(m)})'>Start</button>
+      </div>
+    `).join('');
+}
+
+// ===============================================
+// RENDER AGGREGAT STATUS
+// ===============================================
+function renderStatus() {
+  const S = Aggregator.status;
+
+  document.getElementById("aggStatus").innerHTML = `
+    <strong>🔥 FIRE:</strong> ${S.fire.length}<br>
+    <strong>
