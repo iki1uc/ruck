@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKI1UC · FIREICE · Build Engine</title>
+
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0f1115;
+    font-family:-apple-system, Segoe UI, Roboto, sans-serif;
+    color:#e6e9ef;
+    min-height:100vh;
+    padding:20px;
+  }
+  header {
+    padding:24px 32px;
+    text-align:center;
+    background:linear-gradient(135deg,#ff4d4d,#4da6ff);
+    border-radius:16px;
+    margin-bottom:30px;
+  }
+  header h1 { font-size:28px; font-weight:700; letter-spacing:1px; }
+  header p { margin-top:6px; font-size:14px; opacity:0.9; }
+
+  .wrap {
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  .controls {
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:24px;
+    align-items:center;
+  }
+  .controls input {
+    flex:1;
+    min-width:200px;
+    padding:10px 16px;
+    background:#1a1d23;
+    border:1px solid #2a2e36;
+    border-radius:8px;
+    color:#e6e9ef;
+    font-size:14px;
+    outline:none;
+  }
+  .controls input:focus { border-color:#4da6ff; }
+  .controls .badge {
+    background:#2a2e36;
+    padding:6px 16px;
+    border-radius:20px;
+    font-size:13px;
+    color:#8a8f9a;
+  }
+  .controls .badge span { color:#e6e9ef; font-weight:600; }
+
+  .grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media(max-width:900px){ .grid { grid-template-columns:1fr; } }
+
+  .card {
+    background:#1a1d23;
+    border:1px solid #2a2e36;
+    border-radius:12px;
+    padding:20px;
+    transition:border-color 0.2s;
+  }
+  .card h2 {
+    margin:0 0 16px 0;
+    font-size:18px;
+    font-weight:600;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .card .count {
+    font-size:13px;
+    font-weight:400;
+    color:#8a8f9a;
+  }
+
+  .module-list {
+    list-style:none;
+    padding:0;
+    margin:0;
+  }
+  .module-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid #2a2e36;
+    font-size:14px;
+    transition:background 0.15s;
+  }
+  .module-item:last-child { border-bottom:none; }
+  .module-item .name { font-weight:500; }
+  .module-item .path {
+    font-size:12px;
+    color:#6a6f7a;
+    margin-left:8px;
+  }
+  .module-item .status {
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-left:12px;
+    flex-shrink:0;
+  }
+  .status.online { background:#4da6ff; box-shadow:0 0 8px #4da6ff66; }
+  .status.offline { background:#ff4d4d; box-shadow:0 0 8px #ff4d4d66; }
+  .status.build { background:#ffd700; box-shadow:0 0 12px #ffd70088; animation:pulse 0.8s infinite alternate; }
+
+  @keyframes pulse {
+    0% { opacity:0.4; transform:scale(0.9); }
+    100% { opacity:1; transform:scale(1.2); }
+  }
+
+  .fire { border-left:4px solid #ff4d4d; }
+  .ice { border-left:4px solid #4da6ff; }
+
+  .footer-stats {
+    margin-top:24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+    padding:16px;
+    background:#1a1d23;
+    border-radius:12px;
+    border:1px solid #2a2e36;
+    font-size:14px;
+  }
+  .footer-stats .stat {
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .footer-stats .stat .dot {
+    width:8px;
+    height:8px;
+    border-radius:50%;
+  }
+  .footer-stats .stat .dot.online { background:#4da6ff; }
+  .footer-stats .stat .dot.offline { background:#ff4d4d; }
+  .footer-stats .stat .dot.build { background:#ffd700; }
+
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ IKI1UC · FIREICE · Build Engine</h1>
+  <p>Live‑Übersicht aller Module · Status · Filter · Build‑Tick</p>
+</header>
+
+<div class="wrap">
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="🔍 Modul suchen (Name, Pfad, Kategorie) …">
+    <div class="badge">Gesamt: <span id="totalCount">0</span></div>
+    <div class="badge">🔥 Fire: <span id="fireCount">0</span></div>
+    <div class="badge">❄️ Ice: <span id="iceCount">0</span></div>
+    <button id="toggleBuildBtn" style="background:#2a2e36;border:none;color:#e6e9ef;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;">⏱ Build‑Tick</button>
+  </div>
+
+  <div class="grid" id="moduleGrid">
+    <div class="card fire" id="firePanel">
+      <h2>🔥 FIRE · Engine / Pipeline <span class="count" id="fireCountLabel">0</span></h2>
+      <ul class="module-list" id="fireList"></ul>
+    </div>
+    <div class="card ice" id="icePanel">
+      <h2>❄️ ICE · RAW / ROM / RAM / CPU <span class="count" id="iceCountLabel">0</span></h2>
+      <ul class="module-list" id="iceList"></ul>
+    </div>
+  </div>
+
+  <div class="footer-stats">
+    <div class="stat"><span class="dot online"></span> Online: <span id="onlineCount">0</span></div>
+    <div class="stat"><span class="dot offline"></span> Offline: <span id="offlineCount">0</span></div>
+    <div class="stat"><span class="dot build"></span> Building: <span id="buildCount">0</span></div>
+    <div class="stat">🔄 Build‑Tick: <span id="tickDisplay">0</span></div>
+  </div>
+
+</div>
+
+<script>
+// ================================================================
+// 1. MODULDATEN – die einzige Quelle der Wahrheit
+// ================================================================
+const MODULES = [
+  // FIRE – Engine / Pipeline
+  { name: 'MCFLY‑ORBIT Engine', path: '../index.html', category: 'fire', status: 'online' },
+  { name: 'Pipeline9', path: 'pipe.pipeline.js', category: 'fire', status: 'online' },
+  { name: 'Stage‑Pipeline', path: 'stage.pipeline.js', category: 'fire', status: 'online' },
+  { name: 'Raid‑Pipeline', path: 'raid.pipeline.js', category: 'fire', status: 'online' },
+  { name: 'Zahnrad', path: 'zahn.js', category: 'fire', status: 'online' },
+  { name: 'Transwarp (MassHW)', path: 'mass.js', category: 'fire', status: 'online' },
+  { name: 'TimeHW', path: 'time.js', category: 'fire', status: 'online' },
+  { name: '3hit90', path: '3hit90.js', category: 'fire', status: 'online' },
+  { name: '3×1', path: '3×1.js', category: 'fire', status: 'online' },
+  { name: '3×3', path: '3×3.js', category: 'fire', status: 'online' },
+  { name: '9×9', path: '9×9.js', category: 'fire', status: 'online' },
+  { name: 'arbeit', path: 'arbeit.js', category: 'fire', status: 'online' },
+  { name: 'work', path: 'work.js', category: 'fire', status: 'online' },
+  { name: 'geo', path: 'geo.js', category: 'fire', status: 'online' },
+  { name: 'gleichung', path: 'gleichung.js', category: 'fire', status: 'online' },
+  { name: 'hall.rad', path: 'hall.rad.js', category: 'fire', status: 'online' },
+
+  // ICE – RAW / ROM / RAM / CPU / GPU
+  { name: 'atom.raw', path: 'atom.raw.js', category: 'ice', status: 'online' },
+  { name: 'cpu.raw', path: 'cpu.raw.js', category: 'ice', status: 'online' },
+  { name: 'ram.raw', path: 'ram.raw.js', category: 'ice', status: 'online' },
+  { name: 'rom.raw', path: 'rom.raw.js', category: 'ice', status: 'online' },
+  { name: 'cache.raw', path: 'cache.raw.js', category: 'ice', status: 'online' },
+  { name: 'gpu.raw', path: 'gpu.raw.js', category: 'ice', status: 'online' },
+  { name: 'energie.raw', path: 'energie.raw.js', category: 'ice', status: 'online' },
+  { name: 'ANKER.rom', path: 'ANKER.rom.js', category: 'ice', status: 'online' },
+  { name: 'NO1.room', path: 'NO1.room.js', category: 'ice', status: 'online' },
+  { name: 'TMP.cubik', path: 'TMP.cubik.js', category: 'ice', status: 'online' },
+  { name: 'ROOM.anime', path: 'ROOM.anime.js', category: 'ice', status: 'online' },
+  { name: 'cache.safe', path: 'cache.safe.js', category: 'ice', status: 'online' },
+  { name: 'dashboard.activator', path: 'dashboard.activator.js', category: 'ice', status: 'online' },
+];
+
+// ================================================================
+// 2. ENGINE‑ZUSTAND
+// ================================================================
+let buildTick = 0;
+let buildInterval = null;
+let isBuilding = false;
+
+// ================================================================
+// 3. RENDER‑FUNKTIONEN (dynamisch, algorithmisch)
+// ================================================================
+function renderModules(filter = '') {
+  const filterLower = filter.toLowerCase().trim();
+
+  // Filtern
+  const filtered = MODULES.filter(m =>
+    m.name.toLowerCase().includes(filterLower) ||
+    m.path.toLowerCase().includes(filterLower) ||
+    m.category.includes(filterLower)
+  );
+
+  // Gruppieren
+  const fireModules = filtered.filter(m => m.category === 'fire');
+  const iceModules = filtered.filter(m => m.category === 'ice');
+
+  // Zähler aktualisieren
+  document.getElementById('totalCount').textContent = filtered.length;
+  document.getElementById('fireCount').textContent = fireModules.length;
+  document.getElementById('iceCount').textContent = iceModules.length;
+  document.getElementById('fireCountLabel').textContent = fireModules.length;
+  document.getElementById('iceCountLabel').textContent = iceModules.length;
+
+  // Status-Zähler
+  const online = filtered.filter(m => m.status === 'online').length;
+  const offline = filtered.filter(m => m.status === 'offline').length;
+  const building = filtered.filter(m => m.status === 'build').length;
+  document.getElementById('onlineCount').textContent = online;
+  document.getElementById('offlineCount').textContent = offline;
+  document.getElementById('buildCount').textContent = building;
+
+  // FIRE‑Liste rendern
+  const fireList = document.getElementById('fireList');
+  fireList.innerHTML = fireModules.map(m => createModuleItem(m)).join('');
+
+  // ICE‑Liste rendern
+  const iceList = document.getElementById('iceList');
+  iceList.innerHTML = iceModules.map(m => createModuleItem(m)).join('');
+
+  // Leere Zustände anzeigen
+  if (fireModules.length === 0) {
+    fireList.innerHTML = '<li style="color:#6a6f7a;padding:8px 0;">Keine Fire‑Module gefunden.</li>';
+  }
+  if (iceModules.length === 0) {
+    iceList.innerHTML = '<li style="color:#6a6f7a;padding:8px 0;">Keine Ice‑Module gefunden.</li>';
+  }
+}
+
+function createModuleItem(m) {
+  const statusClass = m.status === 'build' ? 'build' : (m.status === 'online' ? 'online' : 'offline');
+  return `
+    <li class="module-item">
+      <span>
+        <span class="name">${m.name}</span>
+        <span class="path">${m.path}</span>
+      </span>
+      <span class="status ${statusClass}"></span>
+    </li>
+  `;
+}
+
+// ================================================================
+// 4. BUILD‑TICK – simuliert einen Build‑Zyklus
+// ================================================================
+function toggleBuild() {
+  if (isBuilding) {
+    clearInterval(buildInterval);
+    buildInterval = null;
+    isBuilding = false;
+    document.getElementById('toggleBuildBtn').textContent = '⏱ Build‑Tick';
+    // Alle Module wieder auf 'online' setzen
+    MODULES.forEach(m => { if (m.status === 'build') m.status = 'online'; });
+    renderModules(document.getElementById('searchInput').value);
+    return;
+  }
+
+  isBuilding = true;
+  document.getElementById('toggleBuildBtn').textContent = '⏹ Stop Build';
+  buildTick = 0;
+  document.getElementById('tickDisplay').textContent = '0';
+
+  buildInterval = setInterval(() => {
+    buildTick++;
+    document.getElementById('tickDisplay').textContent = buildTick;
+
+    // Zufällig ein Modul auf 'build' setzen, andere zurücksetzen
+    MODULES.forEach(m => {
+      if (m.status === 'build') m.status = 'online';
+    });
+
+    // 1–3 Module werden gebaut
+    const count = 1 + Math.floor(Math.random() * 3);
+    const shuffled = [...MODULES].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+      shuffled[i].status = 'build';
+    }
+
+    // UI aktualisieren
+    renderModules(document.getElementById('searchInput').value);
+  }, 1200);
+}
+
+// ================================================================
+// 5. EVENT‑BINDING
+// ================================================================
+document.getElementById('searchInput').addEventListener('input', function() {
+  renderModules(this.value);
+});
+
+document.getElementById('toggleBuildBtn').addEventListener('click', toggleBuild);
+
+// ================================================================
+// 6. INIT
+// ================================================================
+renderModules('');
+document.getElementById('tickDisplay').textContent = '0';
+</script>
+</body>
+</html>
