@@ -1,0 +1,190 @@
+{
+  "timestamp": "2026-08-16T12:00:59.675Z",
+  "preset": "calm",
+  "mask3x3": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ]
+  ],
+  "maskText": "1.000 0.000 0.000\n0.000 0.000 0.000\n1.000 0.000 0.000",
+  "perLang": [
+    {
+      "mask3x3": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "preset": "calm",
+      "qi": 0.635,
+      "iqq": 0.33499999999999996,
+      "base": 0.5,
+      "maxc": 0.7,
+      "minc": 0.3,
+      "variance": 0.39999999999999997,
+      "arg": 0.783,
+      "xarg": 0.4,
+      "arg3te": 0.4698
+    },
+    {
+      "mask3x3": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "preset": "calm",
+      "qi": 0.635,
+      "iqq": 0.33499999999999996,
+      "base": 0.5,
+      "maxc": 0.7,
+      "minc": 0.3,
+      "variance": 0.39999999999999997,
+      "arg": 0.783,
+      "xarg": 0.4,
+      "arg3te": 0.4698
+    },
+    {
+      "mask3x3": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "preset": "calm",
+      "qi": 0.635,
+      "iqq": 0.33499999999999996,
+      "base": 0.5,
+      "maxc": 0.7,
+      "minc": 0.3,
+      "variance": 0.39999999999999997,
+      "arg": 0.783,
+      "xarg": 0.4,
+      "arg3te": 0.4698
+    },
+    {
+      "mask3x3": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "preset": "calm",
+      "qi": 0.635,
+      "iqq": 0.33499999999999996,
+      "base": 0.5,
+      "maxc": 0.7,
+      "minc": 0.3,
+      "variance": 0.39999999999999997,
+      "arg": 0.783,
+      "xarg": 0.4,
+      "arg3te": 0.4698
+    }
+  ],
+  "agg": {
+    "finalArg": 0.783,
+    "finalXarg": 0.4,
+    "finalArg3te": 0.4698,
+    "recommendation": "Konservative Sorgfaltsbewertung für Punkt 2268:\n- arg: 0.783\n- xarg (Unsicherheit): 0.4\n- arg3te: 0.4698\n\nEmpfehlung: Niedrige Zuversicht — weitere Daten/Experten erforderlich."
+  },
+  "multiscaleResults": [
+    {
+      "level": 1,
+      "size": 3,
+      "stats": {
+        "rows": 3,
+        "cols": 3,
+        "mean": 0.2222222222222222,
+        "max": 1,
+        "min": 0,
+        "count": 9
+      },
+      "tmp": "calm",
+      "levelScore": 0.1556
+    },
+    {
+      "level": 2,
+      "size": 9,
+      "stats": {
+        "rows": 9,
+        "cols": 9,
+        "mean": 0.2222222222222222,
+        "max": 1,
+        "min": 0,
+        "count": 81
+      },
+      "tmp": "active",
+      "levelScore": 0.1556
+    },
+    {
+      "level": 3,
+      "size": 27,
+      "stats": {
+        "rows": 27,
+        "cols": 27,
+        "mean": 0.2222222222222222,
+        "max": 1,
+        "min": 0,
+        "count": 729
+      },
+      "tmp": "orbit",
+      "levelScore": 0.1556
+    }
+  ]
+}

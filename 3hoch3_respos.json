@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "level": 1,
+    "size": 9,
+    "QI": 0.65,
+    "IQQ": 0.35,
+    "timestamp": 1787799800705
+  },
+  "room": {
+    "station": "3hoch3",
+    "value": 27,
+    "type": "energy-matrix",
+    "links": {
+      "root": "ULTRA-NC3×3.room",
+      "tensor": "ULTRA-NC9×9.room",
+      "nc": "81.room"
+    },
+    "use": "6E-optimization"
+  },
+  "threehoch3": {
+    "dim": 27,
+    "links": [
+      "3x3",
+      "9x9",
+      "81"
+    ]
+  },
+  "items": [
+    {
+      "id": 0,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 1,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 2,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 3,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 4,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 5,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 6,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 7,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    },
+    {
+      "id": 8,
+      "text": "",
+      "confs": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "state": "VOID"
+    }
+  ],
+  "scored": null,
+  "multiscale": null
+}

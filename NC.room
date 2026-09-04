@@ -1,0 +1,60 @@
+NC.room = {
+    # NC‑Kern
+    raw: NC.raw,
+    link: NC.link,
+    verify: NC.verify,
+    api: NC.api,
+    boot: NC.boot,
+    anker: NC.anker,
+    nc3: NC.³,
+
+    # 6D‑Raum‑Matrix
+    root: ULTRA‑ROOT,          # D1
+    orbit: ULTRA‑ORBIT,        # D2
+    tech: ULTRA‑TECH,          # D3
+    meta: ULTRA‑META,          # D4
+    stationen: ULTRA‑STATIONEN,# D5
+    allxall: ULTRA‑ALL×ALL,    # D6
+
+    # Achsen + Orbit
+    axes: [octa², octa³],
+    orbit_anchor: ∞_0M,
+
+    # ALL×ALL‑Brücke
+    all_in: ALL×ALL.in,
+    all_out: ALL×ALL.out,
+    all6D: ALL×ALL.6D,
+    all6E: ALL×ALL.6E,
+
+    # ULTRA‑Motoren
+    engine: ULTRA‑ENGINE,
+    core: ULTRA‑CORE,
+    shell: ULTRA‑SHELL,
+    field: ULTRA‑FIELD,
+    signal: ULTRA‑SIGNAL,
+
+    # Fusion + Editor
+    fusion: NC‑FUSION‑ENGINE,
+    edit: 6D.edit,
+
+    # TECH‑Energie
+    tech6D: TECH.6D,
+    tech6E: TECH.6E,
+
+    # META‑Energie
+    meta6D: META.6D,
+    meta6E: META.6E,
+
+    # STATIONEN‑Module
+    geo_axes: geoAxes,
+    geo_lage: geoLAGE,
+    respo9hoch9: respo9hoch9,
+
+    # Score‑System
+    score: ULTRA‑Score‑6E,
+
+    # Raum‑Status
+    state: "ACTIVE",
+    mode: "NC‑ROOM",
+    version: "REV‑4.0‑BETA3"
+}
