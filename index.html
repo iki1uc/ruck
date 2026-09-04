@@ -3,143 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IKI1UC · FIREICE · Build Dashboard</title>
+<title>IKI1UC · RUN21 · Drei‑Pools</title>
 
 <style>
-  body {
-    margin:0;
-    padding:0;
-    background:#0f1115;
-    font-family:-apple-system, Segoe UI, Roboto, sans-serif;
-    color:#e6e9ef;
-  }
-  header {
-    padding:32px;
-    text-align:center;
-    background:linear-gradient(135deg,#ff4d4d,#4da6ff);
-  }
-  header h1 {
-    font-size:28px;
-    font-weight:700;
-    margin:0;
-  }
-  header p {
-    margin-top:8px;
-    font-size:14px;
-    opacity:0.9;
-  }
-
-  .wrap {
-    max-width:1100px;
-    margin:0 auto;
-    padding:30px;
-  }
-
-  .grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:24px;
-  }
-  @media(max-width:900px){
-    .grid { grid-template-columns:1fr; }
-  }
-
-  .card {
-    background:#1a1d23;
-    border:1px solid #2a2e36;
-    border-radius:12px;
-    padding:20px;
-  }
-  .card h2 {
-    margin:0 0 12px 0;
-    font-size:18px;
-    font-weight:600;
-  }
-
-  ul {
-    list-style:none;
-    padding:0;
-    margin:0;
-  }
-  li {
-    padding:6px 0;
-    border-bottom:1px solid #2a2e36;
-    font-size:14px;
-  }
-  li:last-child { border-bottom:none; }
-
-  .fire {
-    background:#2a1a1a;
-    border-left:4px solid #ff4d4d;
-  }
-  .ice {
-    background:#1a2633;
-    border-left:4px solid #4da6ff;
-  }
-
-  a {
-    color:#4da6ff;
-    text-decoration:none;
-  }
-  a:hover {
-    text-decoration:underline;
-  }
+  body { background:#0f1115; color:#e6e9ef; font-family:Consolas, monospace; padding:20px; }
+  h1 { font-size:22px; text-align:center; margin-bottom:20px; }
+  .wrap { max-width:1200px; margin:0 auto; }
+  .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+  .panel { background:#1a1d23; border:1px solid #2a2e36; border-radius:12px; padding:16px; }
+  .panel h2 { font-size:14px; margin-bottom:10px; }
+  .module { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2e36; }
+  .module:last-child { border-bottom:none; }
+  .status { width:10px; height:10px; border-radius:50%; }
+  .online { background:#4da6ff; }
+  .offline { background:#ff4d4d; }
+  .build { background:#ffd700; animation:pulse 1s infinite alternate; }
+  @keyframes pulse { from{opacity:0.4} to{opacity:1} }
 </style>
 </head>
-<body>
 
-<header>
-  <h1>IKI1UC · FIREICE · Build Dashboard</h1>
-  <p>Build‑Übersicht für MCFLY‑ORBIT · ALL NATURA · 3‑9‑81</p>
-</header>
+<body>
+<h1>⚡ IKI1UC · RUN21 · Drei‑Pools</h1>
 
 <div class="wrap">
 
+  <input id="search" placeholder="🔍 Modul suchen…" 
+         style="width:100%;padding:10px;background:#1a1d23;border:1px solid #2a2e36;border-radius:8px;margin-bottom:20px;color:#e6e9ef">
+
   <div class="grid">
-
-    <!-- FIRE PANEL -->
-    <div class="card fire">
-      <h2>🔥 FIRE · Engine / Orbit / Pipeline</h2>
-      <ul>
-        <li><a href="../index.html">MCFLY‑ORBIT Engine</a></li>
-        <li>Pipeline9: pipe.pipeline.js</li>
-        <li>Stage‑Pipeline: stage.pipeline.js</li>
-        <li>Raid‑Pipeline: raid.pipeline.js</li>
-        <li>Zahnrad: zahn.js</li>
-        <li>Transwarp: mass.js</li>
-        <li>TimeHW: time.js</li>
-      </ul>
+    <div class="panel">
+      <h2>🔥 FIRE · Engine/Pipeline</h2>
+      <div id="fireList"></div>
     </div>
 
-    <!-- ICE PANEL -->
-    <div class="card ice">
-      <h2>❄️ ICE · RAW / ROM / RAM / CPU / GPU</h2>
-      <ul>
-        <li>atom.raw.js</li>
-        <li>cpu.raw.js</li>
-        <li>ram.raw.js</li>
-        <li>rom.raw.js</li>
-        <li>cache.raw.js</li>
-        <li>gpu.raw.js</li>
-        <li>energie.raw.js</li>
-      </ul>
+    <div class="panel">
+      <h2>❄️ ICE · RAW/ROM/RAM/CPU</h2>
+      <div id="iceList"></div>
     </div>
 
-  </div>
-
-  <div class="card" style="margin-top:24px;">
-    <h2>📁 Projektstruktur</h2>
-    <ul>
-      <li>/ort — 3hit90.js, 3×1.js, 3×3.js, 9×9.js</li>
-      <li>/pipeline — pipe.pipeline.js, raid.pipeline.js, stage.pipeline.js</li>
-      <li>/engine — index.html, arbeit.js, work.js</li>
-      <li>/raum — NC.room, ANKER.room, TMP.tmp</li>
-      <li>/analyse — respos, continuum, interpretation</li>
-      <li>/basis — geo.js, gleichung.js, hall.rad.js</li>
-    </ul>
+    <div class="panel">
+      <h2>🌍 ORT · Pfad/Matrix</h2>
+      <div id="ortList"></div>
+    </div>
   </div>
 
 </div>
+
+<script>
+// =====================================================
+// MODULE‑SCAN aus drei Pools: api/, markt/, ort/
+// =====================================================
+const MODULES = [
+  // FIRE (Engine/Pipeline)
+  { name:'3×1', path:'api/3×1.js', category:'fire', status:'online' },
+  { name:'3×3', path:'api/3×3.js', category:'fire', status:'online' },
+  { name:'9×9', path:'api/9×9.js', category:'fire', status:'online' },
+  { name:'Pipeline9', path:'markt/pipe.pipeline.js', category:'fire', status:'online' },
+  { name:'Raid', path:'markt/raid.pipeline.js', category:'fire', status:'online' },
+
+  // ICE (RAW/ROM/RAM/CPU)
+  { name:'cpu.raw', path:'markt/cpu.raw.js', category:'ice', status:'online' },
+  { name:'ram.raw', path:'markt/ram.raw.js', category:'ice', status:'online' },
+  { name:'rom.raw', path:'markt/rom.raw.js', category:'ice', status:'online' },
+  { name:'gpu.raw', path:'markt/gpu.raw.js', category:'ice', status:'online' },
+
+  // ORT (Pfad/Matrix)
+  { name:'3hoch3', path:'ort/3hoch3_respos.json', category:'ort', status:'online' },
+  { name:'9hoch9', path:'ort/9hoch9_respos.json', category:'ort', status:'online' },
+  { name:'NC.room', path:'ort/NC.room', category:'ort', status:'online' },
+  { name:'quant‑triangle', path:'ort/quant-triangle-analysis.json', category:'ort', status:'online' },
+];
+
+// =====================================================
+// Render‑Funktion
+// =====================================================
+function render(filter='') {
+  const f = filter.toLowerCase();
+  const fire = MODULES.filter(m => m.category==='fire' && m.name.toLowerCase().includes(f));
+  const ice  = MODULES.filter(m => m.category==='ice'  && m.name.toLowerCase().includes(f));
+  const ort  = MODULES.filter(m => m.category==='ort'  && m.name.toLowerCase().includes(f));
+
+  document.getElementById('fireList').innerHTML = fire.map(m => item(m)).join('');
+  document.getElementById('iceList').innerHTML  = ice.map(m => item(m)).join('');
+  document.getElementById('ortList').innerHTML  = ort.map(m => item(m)).join('');
+}
+
+function item(m) {
+  return `
+    <div class="module">
+      <span>${m.name}<br><small>${m.path}</small></span>
+      <span class="status ${m.status}"></span>
+    </div>
+  `;
+}
+
+document.getElementById('search').addEventListener('input', e => render(e.target.value));
+render();
+</script>
 
 </body>
 </html>
