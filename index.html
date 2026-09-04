@@ -592,32 +592,6 @@ setInterval(() => {
     document.getElementById('kernEnergie').textContent = Math.round(energy) + '%';
   }
 }, 3000);
-
-let flip = false;
-
-setInterval(() => {
-  flip = !flip;
-
-  if (flip) {
-    document.getElementById('middleContent').innerHTML = `
-      🔵 <b>System‑Status</b><br>
-      Online: ${MODULES.filter(m => m.status === 'online').length}<br>
-      Build: ${MODULES.filter(m => m.status === 'build').length}<br>
-      Offline: ${MODULES.filter(m => m.status === 'offline').length}
-    `;
-  } else {
-    const energy = document.getElementById('energyFooter').textContent;
-    document.getElementById('middleContent').innerHTML = `
-      ⚡ <b>Energie</b><br>
-      Aktuell: ${energy}<br>
-      Tick: ${buildTick}<br>
-      Module: ${MODULES.length}
-    `;
-  }
-}, 1000);
-
-  
-  
-  script>
+</script>
 </body>
 </html>
