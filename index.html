@@ -582,6 +582,33 @@ const RUN21 = {
     }, 1200);
   }
 };
+function live(msg) {
+  const box = document.createElement('div');
+  box.style.cssText = `
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    background:#0f1117;
+    border:1px solid #4da6ff;
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:12px;
+    color:#e6e9ef;
+    z-index:9999;
+    max-width:360px;
+    box-shadow:0 0 20px #4da6ff55;
+    margin-top:6px;
+  `;
+  box.textContent = "⚡ " + msg;
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 4000);
+}
+function toggleStatus(name) {
+  const mod = MODULES.find(m => m.name === name);
+  if (!mod) return;
+  mod.status = mod.status === 'online' ? 'offline' : 'online';
+  renderModules(document.getElementById('searchInput').value);
+}
 
 RUN21.init();
 
