@@ -3,21 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IKI1UC · FIREICE · Build Dashboard</title>
+<title>IKI1UC · RUN21 · Aggregator UI</title>
 
 <style>
   body { background:#0f1115; color:#e6e9ef; font-family:Consolas, monospace; padding:20px; }
-  h1 { font-size:24px; text-align:center; margin-bottom:10px; }
+  h1 { text-align:center; font-size:24px; margin-bottom:10px; }
   h2 { font-size:14px; margin-bottom:10px; color:#8a8f9a; }
 
-  .wrap { max-width:1200px; margin:0 auto; }
-  .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+  .wrap { max-width:1300px; margin:0 auto; }
+
+  .search {
+    width:100%; padding:10px;
+    background:#1a1d23; border:1px solid #2a2e36;
+    border-radius:8px; color:#e6e9ef;
+    margin-bottom:20px;
+  }
+
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  @media(max-width:1100px){ .grid { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:700px){ .grid { grid-template-columns:1fr; } }
 
   .panel {
     background:#1a1d23;
     border:1px solid #2a2e36;
     border-radius:12px;
     padding:16px;
+    min-height:200px;
   }
 
   .module {
@@ -35,22 +46,14 @@
 
   @keyframes pulse { from{opacity:0.4} to{opacity:1} }
 
-  .search {
-    width:100%; padding:10px;
-    background:#1a1d23; border:1px solid #2a2e36;
-    border-radius:8px; color:#e6e9ef;
-    margin-bottom:20px;
-  }
-
-  .struct-list { font-size:12px; line-height:1.5; }
-  .struct-list span { color:#4da6ff; }
+  .count { font-size:12px; color:#8a8f9a; margin-bottom:10px; }
 </style>
 </head>
 
 <body>
 
-<h1>⚡ IKI1UC · FIREICE · Build Dashboard</h1>
-<h2>Build‑Übersicht für MCFLY‑ORBIT · ALL NATURA · 3‑9‑81</h2>
+<h1>⚡ IKI1UC · RUN21 · Aggregator Dashboard</h1>
+<h2>Borg‑Operator · FIRE / ICE / ORT · RAW / ROM / RAM / CPU / GPU · NC · quant · continuum</h2>
 
 <div class="wrap">
 
@@ -58,45 +61,99 @@
 
   <div class="grid">
 
-    <!-- FIRE -->
     <div class="panel">
-      <h2>🔥 FIRE · Engine / Orbit / Pipeline</h2>
+      <h2>🔥 FIRE</h2>
+      <div class="count">Engine / Orbit / Pipeline</div>
       <div id="fireList"></div>
     </div>
 
-    <!-- ICE -->
     <div class="panel">
-      <h2>❄️ ICE · RAW / ROM / RAM / CPU / GPU</h2>
+      <h2>❄️ ICE</h2>
+      <div class="count">RAW / ROM / RAM / CPU / GPU</div>
       <div id="iceList"></div>
     </div>
 
-    <!-- ORT -->
     <div class="panel">
-      <h2>🌍 ORT · Pfad / Matrix / Natura</h2>
+      <h2>🌍 ORT</h2>
+      <div class="count">Pfad / Matrix / Natura</div>
       <div id="ortList"></div>
     </div>
 
-  </div>
-
-  <div class="panel" style="margin-top:20px;">
-    <h2>📁 Projektstruktur</h2>
-    <div class="struct-list">
-      <p><span>/ort</span> — 3hit90.js, 3×1.js, 3×3.js, 9×9.js</p>
-      <p><span>/pipeline</span> — pipe.pipeline.js, raid.pipeline.js, stage.pipeline.js</p>
-      <p><span>/engine</span> — index.html, arbeit.js, work.js</p>
-      <p><span>/raum</span> — NC.room, ANKER.room, TMP.tmp</p>
-      <p><span>/analyse</span> — respos, continuum, interpretation</p>
-      <p><span>/basis</span> — geo.js, gleichung.js, hall.rad.js</p>
+    <div class="panel">
+      <h2>📦 RAW / ROM / RAM / CPU / GPU</h2>
+      <div class="count">Hardware‑Schichten</div>
+      <div id="rawList"></div>
     </div>
+
+    <div class="panel">
+      <h2>⚓ ANKER</h2>
+      <div class="count">Fixpunkte / Stabilisierung</div>
+      <div id="ankerList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>💨 TMP</h2>
+      <div class="count">Pump / Cubik / Stack</div>
+      <div id="tmpList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>🏛 NC.room</h2>
+      <div class="count">High‑Natura‑Chamber</div>
+      <div id="ncList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>🔺 quant‑triangle</h2>
+      <div class="count">3 → 9 → 81‑Analyse</div>
+      <div id="quantList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>🌀 continuum</h2>
+      <div class="count">6×6 / reality / payload</div>
+      <div id="contList"></div>
+    </div>
+
   </div>
 
 </div>
 
-<script>
-// ===============================
-// MODULES – FIRE / ICE / ORT
-// ===============================
-const MODULES = [
-  // FIRE
-  { name:'MCFLY‑ORBIT Engine', path:'engine/index.html', category:'fire', status:'online' },
-  { name:'Pipeline9', path:'pipeline/pipe.pipeline.js', category:'
+<script type="module">
+import { Aggregator } from "./aggregator.js";
+
+function renderCategory(list, target) {
+  document.getElementById(target).innerHTML =
+    list.map(m => `
+      <div class="module">
+        <span>${m.name}<br><small>${m.path}</small></span>
+        <span class="status ${m.status}"></span>
+      </div>
+    `).join('');
+}
+
+function renderAll(filter="") {
+  const f = filter.toLowerCase();
+
+  const S = Aggregator.status;
+
+  renderCategory(S.fire.filter(m => m.name.toLowerCase().includes(f)), "fireList");
+  renderCategory(S.ice.filter(m => m.name.toLowerCase().includes(f)), "iceList");
+  renderCategory(S.ort.filter(m => m.name.toLowerCase().includes(f)), "ortList");
+
+  renderCategory([...S.raw, ...S.rom, ...S.ram, ...S.cpu, ...S.gpu].filter(m => m.name.toLowerCase().includes(f)), "rawList");
+
+  renderCategory(S.anker.filter(m => m.name.toLowerCase().includes(f)), "ankerList");
+  renderCategory(S.tmp.filter(m => m.name.toLowerCase().includes(f)), "tmpList");
+  renderCategory(S.nc.filter(m => m.name.toLowerCase().includes(f)), "ncList");
+  renderCategory(S.quant.filter(m => m.name.toLowerCase().includes(f)), "quantList");
+  renderCategory(S.cont.filter(m => m.name.toLowerCase().includes(f)), "contList");
+}
+
+document.getElementById("search").addEventListener("input", e => renderAll(e.target.value));
+
+Aggregator.init().then(() => renderAll());
+</script>
+
+</body>
+</html>
