@@ -505,6 +505,87 @@ setInterval(() => {
     document.getElementById('energyPercent').textContent = Math.round(energy) + '%';
   }
 }, 3000);
+
+  // =====================================================
+// RUN21 · ORGAN-KERNEL · Der richtige Algorithmus
+// =====================================================
+
+const RUN21 = {
+
+  tick: 0,
+  energy: 0,
+
+  init() {
+    this.bindAggregator();
+    this.bindRouter();
+    this.bindRawator();
+    this.startPulse();
+    this.startBuildSync();
+  },
+
+  // Dash ↔ Module
+  bindAggregator() {
+    setInterval(() => {
+      this.tick++;
+      document.getElementById('tickDisplay').textContent = this.tick;
+
+      // Energie aus echten Modulen berechnen
+      const online = MODULES.filter(m => m.status === 'online').length;
+      const build = MODULES.filter(m => m.status === 'build').length;
+
+      this.energy = Math.min(100, Math.round(online * 3 + build * 5));
+      document.getElementById('energyFill').style.width = this.energy + '%';
+      document.getElementById('energyPercent').textContent = this.energy + '%';
+    }, 1000);
+  },
+
+  // Dash ↔ Router
+  bindRouter() {
+    if (window.AX_XA_ROUTER) {
+      AX_XA_ROUTER.init();
+    }
+  },
+
+  // Dash ↔ RAWATOR
+  bindRawator() {
+    if (window.RAWATOR) {
+      setInterval(() => {
+        RAWATOR.vital = Math.min(1, RAWATOR.vital + Math.random() * 0.02);
+        document.getElementById('energyPercent').textContent =
+          Math.round(RAWATOR.vital * 100) + '%';
+      }, 1500);
+    }
+  },
+
+  // Energie‑Puls
+  startPulse() {
+    setInterval(() => {
+      this.energy = Math.min(100, Math.max(5, this.energy + (Math.random() * 6 - 3)));
+      document.getElementById('energyFill').style.width = this.energy + '%';
+      document.getElementById('energyPercent').textContent = Math.round(this.energy) + '%';
+    }, 3000);
+  },
+
+  // Build‑Tick ↔ Module
+  startBuildSync() {
+    setInterval(() => {
+      const count = 1 + Math.floor(Math.random() * 3);
+      const shuffled = [...MODULES].sort(() => Math.random() - 0.5);
+
+      MODULES.forEach(m => { if (m.status === 'build') m.status = 'online'; });
+
+      for (let i = 0; i < count; i++) {
+        shuffled[i].status = 'build';
+      }
+
+      renderModules(document.getElementById('searchInput').value);
+    }, 1200);
+  }
+};
+
+RUN21.init();
+
+
 </script>
 
 </body>
