@@ -3,33 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚡ IKI1UC · RUN21 · Aggregator · Energie‑Fluss</title>
+  <title>⚡ IKI1UC · RUN21 · Kolossal · Aggregator</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      background:#0a0a0f;
+      background:#08080c;
       color:#e6e9ef;
       font-family:'Consolas','Segoe UI',monospace;
       padding:20px;
       min-height:100vh;
     }
-    .wrap { max-width:1400px; margin:0 auto; }
+    .wrap { max-width:1500px; margin:0 auto; }
 
-    /* Kopf */
     header {
       display:flex;
       flex-wrap:wrap;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:24px;
+      margin-bottom:20px;
       padding-bottom:12px;
-      border-bottom:1px solid #2a2e36;
+      border-bottom:2px solid #2a2e36;
     }
     header h1 {
-      font-size:26px;
+      font-size:28px;
       font-weight:700;
       letter-spacing:1px;
-      background:linear-gradient(135deg,#ff4d4d,#4da6ff);
+      background:linear-gradient(135deg,#ff4d4d,#ffd700,#4da6ff);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
@@ -38,17 +37,16 @@
       color:#6a6f7a;
     }
 
-    /* Toolbar */
     .toolbar {
       display:flex;
       flex-wrap:wrap;
-      gap:12px;
-      margin-bottom:20px;
+      gap:10px;
+      margin-bottom:16px;
       align-items:center;
     }
     .toolbar input {
       flex:1;
-      min-width:200px;
+      min-width:180px;
       padding:10px 14px;
       background:#14171e;
       border:1px solid #2a2e36;
@@ -59,90 +57,86 @@
     }
     .toolbar input:focus { border-color:#4da6ff; }
     .toolbar .badge {
-      background:#1a1d23;
-      padding:4px 14px;
+      background:#14171e;
+      padding:4px 12px;
       border-radius:20px;
       font-size:12px;
       color:#8a8f9a;
       border:1px solid #2a2e36;
     }
     .toolbar .badge span { color:#e6e9ef; font-weight:600; }
-    .toolbar .badge .dot {
-      display:inline-block;
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      margin-right:6px;
-    }
-    .badge-fire .dot { background:#ff4d4d; }
-    .badge-ice .dot { background:#4da6ff; }
-    .badge-ort .dot { background:#66ff99; }
 
-    /* Energie‑Balken */
     .energy-bar {
       background:#14171e;
       border-radius:8px;
-      height:6px;
+      height:8px;
       margin-bottom:20px;
       overflow:hidden;
       border:1px solid #2a2e36;
+      position:relative;
     }
     .energy-bar .fill {
       height:100%;
       width:0%;
       background:linear-gradient(90deg,#ff4d4d,#ffd700,#4da6ff);
-      transition:width 0.3s ease;
+      transition:width 0.5s ease;
+      box-shadow:0 0 20px #4da6ff55;
+    }
+    .energy-bar .label {
+      position:absolute;
+      right:10px;
+      top:-2px;
+      font-size:10px;
+      color:#6a6f7a;
     }
 
-    /* Module‑Grid */
-    .module-grid {
+    .grid {
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
       gap:16px;
+      margin-bottom:20px;
     }
-    @media(max-width:1000px){ .module-grid { grid-template-columns:1fr 1fr; } }
-    @media(max-width:680px){ .module-grid { grid-template-columns:1fr; } }
+    @media(max-width:1000px){ .grid { grid-template-columns:1fr 1fr; } }
+    @media(max-width:680px){ .grid { grid-template-columns:1fr; } }
 
     .panel {
       background:#14171e;
       border:1px solid #2a2e36;
       border-radius:12px;
-      padding:16px;
+      padding:14px;
       transition:border-color 0.3s;
+      max-height:500px;
+      overflow-y:auto;
     }
     .panel.fire { border-top:3px solid #ff4d4d; }
-    .panel.ice  { border-top:3px solid #4da6ff; }
-    .panel.ort  { border-top:3px solid #66ff99; }
-    .panel.special { border-top:3px solid #ffd700; }
+    .panel.ice { border-top:3px solid #4da6ff; }
+    .panel.ort { border-top:3px solid #66ff99; }
+    .panel.api { border-top:3px solid #ffd700; }
+    .panel.raw { border-top:3px solid #ff88ff; }
+    .panel.pipeline { border-top:3px solid #ff8800; }
 
     .panel h2 {
-      font-size:14px;
-      margin-bottom:10px;
+      font-size:13px;
+      margin-bottom:8px;
       display:flex;
       justify-content:space-between;
-      align-items:center;
       color:#8a8f9a;
     }
-    .panel h2 .count {
-      font-size:12px;
-      font-weight:400;
-      color:#5a5f6a;
-    }
+    .panel h2 .count { font-weight:400; color:#5a5f6a; }
 
     .module-item {
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:6px 0;
+      padding:5px 0;
       border-bottom:1px solid #1e2229;
-      font-size:13px;
-      transition:background 0.15s;
+      font-size:12px;
+      gap:6px;
     }
     .module-item:last-child { border-bottom:none; }
     .module-item .info {
       display:flex;
       flex-direction:column;
-      gap:2px;
       flex:1;
       min-width:0;
     }
@@ -153,24 +147,17 @@
       text-overflow:ellipsis;
     }
     .module-item .path {
-      font-size:10px;
+      font-size:9px;
       color:#5a5f6a;
     }
     .module-item .status {
-      width:12px;
-      height:12px;
+      width:10px;
+      height:10px;
       border-radius:50%;
       flex-shrink:0;
-      margin-left:8px;
     }
-    .status.online {
-      background:#4da6ff;
-      box-shadow:0 0 8px #4da6ff44;
-    }
-    .status.offline {
-      background:#ff4d4d;
-      box-shadow:0 0 8px #ff4d4d44;
-    }
+    .status.online { background:#4da6ff; box-shadow:0 0 8px #4da6ff44; }
+    .status.offline { background:#ff4d4d; box-shadow:0 0 8px #ff4d4d44; }
     .status.build {
       background:#ffd700;
       animation:pulse 0.8s infinite alternate;
@@ -183,17 +170,16 @@
 
     .module-item .actions {
       display:flex;
-      gap:6px;
+      gap:4px;
       flex-shrink:0;
-      margin-left:8px;
     }
     .module-item .actions button {
       background:#2a2e36;
       border:none;
       color:#e6e9ef;
-      padding:2px 10px;
+      padding:2px 8px;
       border-radius:4px;
-      font-size:10px;
+      font-size:9px;
       cursor:pointer;
       transition:background 0.2s;
     }
@@ -201,17 +187,16 @@
       background:#4da6ff;
       color:#0a0a0f;
     }
-
-    .empty {
-      color:#5a5f6a;
-      font-size:12px;
-      padding:8px 0;
-      text-align:center;
+    .module-item .actions button.toggle {
+      background:#1a1d23;
+      border:1px solid #2a2e36;
     }
+    .module-item .actions button.toggle:hover { border-color:#4da6ff; }
 
-    /* Footer */
+    .empty { color:#5a5f6a; font-size:12px; padding:8px 0; text-align:center; }
+
     .footer {
-      margin-top:24px;
+      margin-top:20px;
       display:flex;
       flex-wrap:wrap;
       gap:16px;
@@ -236,13 +221,26 @@
     .footer .stat .dot.online { background:#4da6ff; }
     .footer .stat .dot.offline { background:#ff4d4d; }
     .footer .stat .dot.build { background:#ffd700; }
-    .footer .tick {
-      color:#ffd700;
-      font-weight:600;
-      min-width:40px;
-    }
+    .footer .tick { color:#ffd700; font-weight:600; min-width:40px; }
 
-    /* Scrollbar */
+    .log-panel {
+      margin-top:16px;
+      background:#14171e;
+      border:1px solid #2a2e36;
+      border-radius:12px;
+      padding:12px;
+      max-height:200px;
+      overflow-y:auto;
+      font-size:11px;
+      color:#8a8f9a;
+    }
+    .log-panel .entry { padding:2px 0; border-bottom:1px solid #1e2229; }
+    .log-panel .entry .time { color:#5a5f6a; }
+    .log-panel .entry .msg { color:#e6e9ef; }
+    .log-panel .entry .msg.build { color:#ffd700; }
+    .log-panel .entry .msg.online { color:#4da6ff; }
+    .log-panel .entry .msg.offline { color:#ff4d4d; }
+
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:#14171e; }
     ::-webkit-scrollbar-thumb { background:#2a2e36; border-radius:4px; }
@@ -252,90 +250,129 @@
 <div class="wrap">
 
   <header>
-    <h1>⚡ IKI1UC · RUN21 · Aggregator</h1>
-    <span class="sub">Energie‑Fluss · Live‑Scan · Modul‑Starter</span>
+    <h1>⚡ IKI1UC · RUN21 · Kolossal</h1>
+    <span class="sub">Aggregator · alle Module · API‑Fokus · Live‑Log</span>
   </header>
 
-  <!-- Toolbar -->
   <div class="toolbar">
     <input id="searchInput" placeholder="🔍 Modul suchen (Name, Pfad, Kategorie) …">
     <div class="badge">📦 <span id="totalCount">0</span></div>
-    <div class="badge badge-fire"><span class="dot"></span>🔥 <span id="fireCount">0</span></div>
-    <div class="badge badge-ice"><span class="dot"></span>❄️ <span id="iceCount">0</span></div>
-    <div class="badge badge-ort"><span class="dot"></span>🌍 <span id="ortCount">0</span></div>
-    <button id="buildToggle" style="background:#2a2e36;border:none;color:#e6e9ef;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;">⏱ Build‑Tick</button>
+    <div class="badge">🔥 <span id="fireCount">0</span></div>
+    <div class="badge">❄️ <span id="iceCount">0</span></div>
+    <div class="badge">🌍 <span id="ortCount">0</span></div>
+    <div class="badge">⭐ <span id="apiCount">0</span></div>
+    <button id="buildToggle" style="background:#2a2e36;border:none;color:#e6e9ef;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;">⏱ Build‑Tick</button>
+    <button id="logClear" style="background:#1a1d23;border:1px solid #2a2e36;color:#6a6f7a;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;">🗑 Log</button>
   </div>
 
-  <!-- Energie‑Balken -->
   <div class="energy-bar">
     <div class="fill" id="energyFill"></div>
+    <span class="label" id="energyPercent">0%</span>
   </div>
 
-  <!-- Module‑Grid -->
-  <div class="module-grid" id="moduleGrid">
-    <div class="panel fire" id="firePanel">
-      <h2>🔥 FIRE · Engine/Pipeline <span class="count" id="fireLabel">0</span></h2>
-      <div id="fireList"></div>
-    </div>
-    <div class="panel ice" id="icePanel">
-      <h2>❄️ ICE · RAW/ROM/RAM/CPU <span class="count" id="iceLabel">0</span></h2>
-      <div id="iceList"></div>
-    </div>
-    <div class="panel ort" id="ortPanel">
-      <h2>🌍 ORT · Pfad/Matrix <span class="count" id="ortLabel">0</span></h2>
-      <div id="ortList"></div>
-    </div>
+  <div class="grid" id="moduleGrid">
+    <div class="panel fire"><h2>🔥 FIRE <span class="count" id="fireLabel">0</span></h2><div id="fireList"></div></div>
+    <div class="panel ice"><h2>❄️ ICE <span class="count" id="iceLabel">0</span></h2><div id="iceList"></div></div>
+    <div class="panel ort"><h2>🌍 ORT <span class="count" id="ortLabel">0</span></h2><div id="ortList"></div></div>
+    <div class="panel api"><h2>⭐ API <span class="count" id="apiLabel">0</span></h2><div id="apiList"></div></div>
+    <div class="panel raw"><h2>🧬 RAW <span class="count" id="rawLabel">0</span></h2><div id="rawList"></div></div>
+    <div class="panel pipeline"><h2>🚀 Pipeline <span class="count" id="pipelineLabel">0</span></h2><div id="pipelineList"></div></div>
   </div>
 
-  <!-- Footer -->
   <div class="footer">
     <div class="stat"><span class="dot online"></span> Online: <span id="onlineCount">0</span></div>
     <div class="stat"><span class="dot offline"></span> Offline: <span id="offlineCount">0</span></div>
     <div class="stat"><span class="dot build"></span> Building: <span id="buildCount">0</span></div>
     <div class="stat">⏱ Tick: <span class="tick" id="tickDisplay">0</span></div>
-    <div class="stat">⚡ Energie: <span id="energyPercent">0%</span></div>
+    <div class="stat">⚡ Energie: <span id="energyFooter">0%</span></div>
+  </div>
+
+  <div class="log-panel" id="logPanel">
+    <div style="color:#5a5f6a;font-size:11px;">📜 Live‑Log</div>
+    <div id="logContent"></div>
   </div>
 
 </div>
 
 <script>
 // ================================================================
-// 1. MODUL‑DEFINITION – die einzige Quelle (alle Pools)
+// 1. MODUL‑DEFINITION – ALLE Dateien aus api/, markt/, ort/
+//    (basierend auf deiner Files.txt)
 // ================================================================
-const MODULES = [
-  // FIRE – Engine / Pipeline (aus api/, markt/, pipeline/)
-  { name:'3×1', path:'api/3×1.js', category:'fire', status:'online' },
-  { name:'3×3', path:'api/3×3.js', category:'fire', status:'online' },
-  { name:'9×9', path:'api/9×9.js', category:'fire', status:'online' },
-  { name:'3hit90', path:'api/3hit90.js', category:'fire', status:'online' },
-  { name:'Pipeline9', path:'markt/pipe.pipeline.js', category:'fire', status:'online' },
-  { name:'Raid‑Pipeline', path:'markt/raid.pipeline.js', category:'fire', status:'online' },
-  { name:'Stage‑Pipeline', path:'markt/stage.pipeline.js', category:'fire', status:'online' },
-  { name:'Zahnrad', path:'markt/zahn.js', category:'fire', status:'online' },
-  { name:'Transwarp', path:'markt/mass.js', category:'fire', status:'online' },
-  { name:'TimeHW', path:'markt/time.js', category:'fire', status:'online' },
-
-  // ICE – RAW / ROM / RAM / CPU / GPU (aus markt/)
-  { name:'cpu.raw', path:'markt/cpu.raw.js', category:'ice', status:'online' },
-  { name:'ram.raw', path:'markt/ram.raw.js', category:'ice', status:'online' },
-  { name:'rom.raw', path:'markt/rom.raw.js', category:'ice', status:'online' },
-  { name:'gpu.raw', path:'markt/gpu.raw.js', category:'ice', status:'online' },
-  { name:'energie.raw', path:'markt/energie.raw.js', category:'ice', status:'online' },
-  { name:'cache.raw', path:'markt/cache.raw.js', category:'ice', status:'online' },
-  { name:'atom.raw', path:'markt/atom.raw.js', category:'ice', status:'online' },
-
-  // ORT – Pfad / Matrix / Raum (aus ort/, raum/)
-  { name:'3hoch3', path:'ort/3hoch3_respos.json', category:'ort', status:'online' },
-  { name:'9hoch9', path:'ort/9hoch9_respos.json', category:'ort', status:'online' },
-  { name:'NC.room', path:'raum/NC.room', category:'ort', status:'online' },
-  { name:'ANKER.room', path:'raum/ANKER.room', category:'ort', status:'online' },
-  { name:'TMP.tmp', path:'raum/TMP.tmp', category:'ort', status:'online' },
-  { name:'quant‑triangle', path:'analyse/quant-triangle-analysis.json', category:'ort', status:'online' },
-  { name:'continuum‑reality', path:'analyse/continuum-reality.json', category:'ort', status:'online' },
+const MODULE_NAMES = [
+  // api/
+  "3hit90.js","3×1.js","3×3.js","81.build","81.rom","81.scan","81.tmp","81.video",
+  "9.tmp","9×9.js","ANKER.rom","ANKER.room","ANKER.scan","ANKER.tmp","CODEOWNERS.md",
+  "CONTRIBUTING.md","ID.json","LICENSE-CLOSED.txt","NO1.room","README.md","TMP.tmp",
+  "anker.js","api.js","arbeit.js","atom.raw.js","build.js","cache.js","cache.raw.js",
+  "call.js","clock.js","corridoor.js","cpu.js","cpu.raw.js","echo.zahn.js",
+  "energie.raw.js","flanke.js","geo.js","gleichung.js","gpu.js","gpu.raw.js",
+  "hall.rad.js","index.html","mac.js","mass.js","pipe.js","pipe.pipeline.js",
+  "rad.js","raid.pipeline.js","ram.js","ram.raw.js","recall.js","respo360.js",
+  "respoDashboard.js","rom.js","rom.raw.js","run.over","schuss.js","scsi.raid",
+  "sli.markt","stage.js","stage.pipeline.js","status.json","time.js","use.js",
+  "user.js","verfahren.js","work.js","zahn.js","ziel.js",
+  // markt/ (fast identisch, aber mit sli.api statt sli.markt)
+  "sli.api",
+  // ort/
+  "3hoch3_respos.json","9hoch9_respos (6).json","NC.room","aggregator.js",
+  "atom-functions-payload.json","continuum-6x6.json","continuum-reality.json",
+  "index.html","index‑aggregator.html","interpretation-2268 (3).json",
+  "quant-triangle-analysis.json"
 ];
 
+// Module mit Pfad und Kategorie
+const MODULES = [];
+
+function addModule(name, path, category) {
+  MODULES.push({ name, path, category, status: 'online' });
+}
+
+// API-Module
+MODULE_NAMES.forEach(n => {
+  const api = n;
+  const markt = n;
+  const ort = n;
+
+  // Prüfen, ob Datei in api/ existiert (alle außer spezielle)
+  if (!n.includes('sli.api') && !n.includes('3hoch3') && !n.includes('9hoch9') &&
+      !n.includes('NC.room') && !n.includes('aggregator.js') && !n.includes('atom-functions') &&
+      !n.includes('continuum') && !n.includes('interpretation') && !n.includes('quant-triangle') &&
+      !n.includes('index‑aggregator') && n !== 'index.html') {
+    addModule(n, 'api/' + n, detectCategory(n));
+  }
+
+  // Markt-Module (alle)
+  if (!n.includes('3hoch3') && !n.includes('9hoch9') && !n.includes('NC.room') &&
+      !n.includes('aggregator.js') && !n.includes('atom-functions') &&
+      !n.includes('continuum') && !n.includes('interpretation') && !n.includes('quant-triangle') &&
+      !n.includes('index‑aggregator') && n !== 'index.html') {
+    addModule(n, 'markt/' + n, detectCategory(n));
+  }
+
+  // Ort-Module (nur spezielle)
+  if (n.includes('3hoch3') || n.includes('9hoch9') || n.includes('NC.room') ||
+      n.includes('aggregator.js') || n.includes('atom-functions') ||
+      n.includes('continuum') || n.includes('interpretation') || n.includes('quant-triangle') ||
+      n.includes('index‑aggregator')) {
+    addModule(n, 'ort/' + n, 'ort');
+  }
+});
+
+function detectCategory(name) {
+  const l = name.toLowerCase();
+  if (l.includes('pipeline') || l.includes('pipe.')) return 'fire';
+  if (l.includes('raw') || l.includes('rom') || l.includes('ram') || l.includes('cpu') ||
+      l.includes('gpu') || l.includes('cache') || l.includes('energie')) return 'ice';
+  if (l.includes('room') || l.includes('tmp') || l.includes('json') || l.includes('analysis') ||
+      l.includes('aggregator') || l.includes('payload') || l.includes('continuum') ||
+      l.includes('interpretation') || l.includes('quant')) return 'ort';
+  if (l.includes('api')) return 'api';
+  return 'fire';
+}
+
 // ================================================================
-// 2. ENGINE‑ZUSTAND
+// 2. STATE
 // ================================================================
 let buildTick = 0;
 let buildInterval = null;
@@ -343,33 +380,49 @@ let isBuilding = false;
 let energy = 0;
 
 // ================================================================
-// 3. RENDER‑FUNKTIONEN
+// 3. LOG
+// ================================================================
+function log(msg, type = '') {
+  const content = document.getElementById('logContent');
+  const time = new Date().toLocaleTimeString('de-DE');
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${type}">${msg}</span>`;
+  content.prepend(entry);
+  if (content.children.length > 80) content.lastChild?.remove();
+}
+
+// ================================================================
+// 4. RENDER
 // ================================================================
 function renderModules(filter = '') {
   const f = filter.toLowerCase().trim();
 
-  // Filtern
   const filtered = MODULES.filter(m =>
     m.name.toLowerCase().includes(f) ||
     m.path.toLowerCase().includes(f) ||
     m.category.includes(f)
   );
 
-  // Gruppieren
   const fire = filtered.filter(m => m.category === 'fire');
-  const ice  = filtered.filter(m => m.category === 'ice');
-  const ort  = filtered.filter(m => m.category === 'ort');
+  const ice = filtered.filter(m => m.category === 'ice');
+  const ort = filtered.filter(m => m.category === 'ort');
+  const api = filtered.filter(m => m.category === 'api');
+  const raw = filtered.filter(m => m.name.includes('.raw') || m.name.includes('RAW'));
+  const pipeline = filtered.filter(m => m.name.includes('pipeline') || m.path.includes('pipeline'));
 
-  // Zähler
   document.getElementById('totalCount').textContent = filtered.length;
   document.getElementById('fireCount').textContent = fire.length;
   document.getElementById('iceCount').textContent = ice.length;
   document.getElementById('ortCount').textContent = ort.length;
+  document.getElementById('apiCount').textContent = api.length;
   document.getElementById('fireLabel').textContent = fire.length;
   document.getElementById('iceLabel').textContent = ice.length;
   document.getElementById('ortLabel').textContent = ort.length;
+  document.getElementById('apiLabel').textContent = api.length;
+  document.getElementById('rawLabel').textContent = raw.length;
+  document.getElementById('pipelineLabel').textContent = pipeline.length;
 
-  // Status‑Zähler
   const online = filtered.filter(m => m.status === 'online').length;
   const offline = filtered.filter(m => m.status === 'offline').length;
   const building = filtered.filter(m => m.status === 'build').length;
@@ -377,26 +430,20 @@ function renderModules(filter = '') {
   document.getElementById('offlineCount').textContent = offline;
   document.getElementById('buildCount').textContent = building;
 
-  // Energie berechnen
-  energy = Math.min(100, Math.round((online / (filtered.length || 1)) * 70 + building * 5));
+  energy = Math.min(100, Math.round((online / (filtered.length || 1)) * 60 + building * 8 + 10));
   document.getElementById('energyFill').style.width = energy + '%';
   document.getElementById('energyPercent').textContent = energy + '%';
+  document.getElementById('energyFooter').textContent = energy + '%';
 
-  // Listen rendern
-  document.getElementById('fireList').innerHTML = fire.length
-    ? fire.map(m => moduleItem(m)).join('')
-    : '<div class="empty">Keine Fire‑Module gefunden</div>';
-
-  document.getElementById('iceList').innerHTML = ice.length
-    ? ice.map(m => moduleItem(m)).join('')
-    : '<div class="empty">Keine Ice‑Module gefunden</div>';
-
-  document.getElementById('ortList').innerHTML = ort.length
-    ? ort.map(m => moduleItem(m)).join('')
-    : '<div class="empty">Keine Ort‑Module gefunden</div>';
+  document.getElementById('fireList').innerHTML = fire.length ? fire.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
+  document.getElementById('iceList').innerHTML = ice.length ? ice.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
+  document.getElementById('ortList').innerHTML = ort.length ? ort.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
+  document.getElementById('apiList').innerHTML = api.length ? api.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
+  document.getElementById('rawList').innerHTML = raw.length ? raw.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
+  document.getElementById('pipelineList').innerHTML = pipeline.length ? pipeline.map(m => itemHTML(m)).join('') : '<div class="empty">—</div>';
 }
 
-function moduleItem(m) {
+function itemHTML(m) {
   return `
     <div class="module-item">
       <div class="info">
@@ -405,35 +452,29 @@ function moduleItem(m) {
       </div>
       <span class="status ${m.status}"></span>
       <div class="actions">
-        <button onclick="startModule('${m.name}')">▶ Start</button>
-        <button onclick="toggleStatus('${m.name}')" style="background:#1a1d23;">↻</button>
+        <button onclick="startModule('${m.name.replace(/'/g, "\\'")}')">▶</button>
+        <button class="toggle" onclick="toggleStatus('${m.name.replace(/'/g, "\\'")}')">↻</button>
       </div>
     </div>
   `;
 }
 
 // ================================================================
-// 4. MODUL‑AKTIONEN (nutzbar)
+// 5. AKTIONEN
 // ================================================================
 function startModule(name) {
   const mod = MODULES.find(m => m.name === name);
   if (!mod) return;
 
-  // Status auf 'build' setzen, dann nach 2s zurück auf 'online'
   mod.status = 'build';
   renderModules(document.getElementById('searchInput').value);
-
-  // Log-Eintrag im Footer sichtbar machen
-  const logBox = document.createElement('div');
-  logBox.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#14171e;border:1px solid #4da6ff;border-radius:8px;padding:12px 18px;font-size:12px;z-index:999;max-width:320px;color:#e6e9ef;box-shadow:0 0 30px #4da6ff33;';
-  logBox.innerHTML = `▶ ${name} gestartet … ⚡`;
-  document.body.appendChild(logBox);
-  setTimeout(() => logBox.remove(), 3000);
+  log(`▶ ${mod.path} gestartet … ⚡`, 'build');
 
   setTimeout(() => {
     mod.status = 'online';
     renderModules(document.getElementById('searchInput').value);
-  }, 1800 + Math.random() * 1200);
+    log(`✓ ${mod.path} erfolgreich`, 'online');
+  }, 1500 + Math.random() * 1500);
 }
 
 function toggleStatus(name) {
@@ -441,10 +482,11 @@ function toggleStatus(name) {
   if (!mod) return;
   mod.status = mod.status === 'online' ? 'offline' : 'online';
   renderModules(document.getElementById('searchInput').value);
+  log(`↻ ${mod.path} → ${mod.status}`, mod.status);
 }
 
 // ================================================================
-// 5. BUILD‑TICK (Simulation)
+// 6. BUILD‑TICK
 // ================================================================
 function toggleBuild() {
   if (isBuilding) {
@@ -454,6 +496,7 @@ function toggleBuild() {
     document.getElementById('buildToggle').textContent = '⏱ Build‑Tick';
     MODULES.forEach(m => { if (m.status === 'build') m.status = 'online'; });
     renderModules(document.getElementById('searchInput').value);
+    log('⏹ Build‑Tick gestoppt', 'offline');
     return;
   }
 
@@ -461,16 +504,15 @@ function toggleBuild() {
   document.getElementById('buildToggle').textContent = '⏹ Stop Build';
   buildTick = 0;
   document.getElementById('tickDisplay').textContent = '0';
+  log('⏱ Build‑Tick gestartet', 'build');
 
   buildInterval = setInterval(() => {
     buildTick++;
     document.getElementById('tickDisplay').textContent = buildTick;
 
-    // Alle build‑Module zurücksetzen
     MODULES.forEach(m => { if (m.status === 'build') m.status = 'online'; });
 
-    // 1–3 zufällige Module auf 'build' setzen
-    const count = 1 + Math.floor(Math.random() * 3);
+    const count = 1 + Math.floor(Math.random() * 4);
     const shuffled = [...MODULES].sort(() => Math.random() - 0.5);
     for (let i = 0; i < Math.min(count, shuffled.length); i++) {
       shuffled[i].status = 'build';
@@ -481,139 +523,40 @@ function toggleBuild() {
 }
 
 // ================================================================
-// 6. EVENT‑BINDING
+// 7. EVENTS
 // ================================================================
 document.getElementById('searchInput').addEventListener('input', function() {
   renderModules(this.value);
 });
 
 document.getElementById('buildToggle').addEventListener('click', toggleBuild);
+document.getElementById('logClear').addEventListener('click', () => {
+  document.getElementById('logContent').innerHTML = '';
+  log('🗑 Log geleert');
+});
 
 // ================================================================
-// 7. INIT
+// 8. INIT
 // ================================================================
 renderModules('');
 document.getElementById('tickDisplay').textContent = '0';
+log('⚡ IKI1UC · RUN21 · Kolossal geladen', 'online');
+log(`📦 ${MODULES.length} Module erkannt (api/markt/ort)`, 'online');
 
-// Auto‑Tick für Energie‑Puls (alle 3s)
+// Auto‑Energie‑Puls
 setInterval(() => {
   if (!isBuilding) {
-    // Leichte Energie‑Schwankung
-    const r = Math.random() * 6 - 3;
+    const r = Math.random() * 8 - 4;
     energy = Math.min(100, Math.max(5, energy + r));
     document.getElementById('energyFill').style.width = energy + '%';
     document.getElementById('energyPercent').textContent = Math.round(energy) + '%';
+    document.getElementById('energyFooter').textContent = Math.round(energy) + '%';
   }
 }, 3000);
 
-  // =====================================================
-// RUN21 · ORGAN-KERNEL · Der richtige Algorithmus
-// =====================================================
-
-const RUN21 = {
-
-  tick: 0,
-  energy: 0,
-
-  init() {
-    this.bindAggregator();
-    this.bindRouter();
-    this.bindRawator();
-    this.startPulse();
-    this.startBuildSync();
-  },
-
-  // Dash ↔ Module
-  bindAggregator() {
-    setInterval(() => {
-      this.tick++;
-      document.getElementById('tickDisplay').textContent = this.tick;
-
-      // Energie aus echten Modulen berechnen
-      const online = MODULES.filter(m => m.status === 'online').length;
-      const build = MODULES.filter(m => m.status === 'build').length;
-
-      this.energy = Math.min(100, Math.round(online * 3 + build * 5));
-      document.getElementById('energyFill').style.width = this.energy + '%';
-      document.getElementById('energyPercent').textContent = this.energy + '%';
-    }, 1000);
-  },
-
-  // Dash ↔ Router
-  bindRouter() {
-    if (window.AX_XA_ROUTER) {
-      AX_XA_ROUTER.init();
-    }
-  },
-
-  // Dash ↔ RAWATOR
-  bindRawator() {
-    if (window.RAWATOR) {
-      setInterval(() => {
-        RAWATOR.vital = Math.min(1, RAWATOR.vital + Math.random() * 0.02);
-        document.getElementById('energyPercent').textContent =
-          Math.round(RAWATOR.vital * 100) + '%';
-      }, 1500);
-    }
-  },
-
-  // Energie‑Puls
-  startPulse() {
-    setInterval(() => {
-      this.energy = Math.min(100, Math.max(5, this.energy + (Math.random() * 6 - 3)));
-      document.getElementById('energyFill').style.width = this.energy + '%';
-      document.getElementById('energyPercent').textContent = Math.round(this.energy) + '%';
-    }, 3000);
-  },
-
-  // Build‑Tick ↔ Module
-  startBuildSync() {
-    setInterval(() => {
-      const count = 1 + Math.floor(Math.random() * 3);
-      const shuffled = [...MODULES].sort(() => Math.random() - 0.5);
-
-      MODULES.forEach(m => { if (m.status === 'build') m.status = 'online'; });
-
-      for (let i = 0; i < count; i++) {
-        shuffled[i].status = 'build';
-      }
-
-      renderModules(document.getElementById('searchInput').value);
-    }, 1200);
-  }
-};
-function live(msg) {
-  const box = document.createElement('div');
-  box.style.cssText = `
-    position:fixed;
-    bottom:20px;
-    left:20px;
-    background:#0f1117;
-    border:1px solid #4da6ff;
-    border-radius:8px;
-    padding:10px 14px;
-    font-size:12px;
-    color:#e6e9ef;
-    z-index:9999;
-    max-width:360px;
-    box-shadow:0 0 20px #4da6ff55;
-    margin-top:6px;
-  `;
-  box.textContent = "⚡ " + msg;
-  document.body.appendChild(box);
-  setTimeout(() => box.remove(), 4000);
-}
-function toggleStatus(name) {
-  const mod = MODULES.find(m => m.name === name);
-  if (!mod) return;
-  mod.status = mod.status === 'online' ? 'offline' : 'online';
-  renderModules(document.getElementById('searchInput').value);
-}
-
-RUN21.init();
-
-
+// Globale Funktionen für onclick
+window.startModule = startModule;
+window.toggleStatus = toggleStatus;
 </script>
-
 </body>
 </html>
