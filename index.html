@@ -3,103 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IKI1UC · RUN21 · Drei‑Pools</title>
+<title>IKI1UC · FIREICE · Build Dashboard</title>
 
 <style>
   body { background:#0f1115; color:#e6e9ef; font-family:Consolas, monospace; padding:20px; }
-  h1 { font-size:22px; text-align:center; margin-bottom:20px; }
+  h1 { font-size:24px; text-align:center; margin-bottom:10px; }
+  h2 { font-size:14px; margin-bottom:10px; color:#8a8f9a; }
+
   .wrap { max-width:1200px; margin:0 auto; }
   .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
-  .panel { background:#1a1d23; border:1px solid #2a2e36; border-radius:12px; padding:16px; }
-  .panel h2 { font-size:14px; margin-bottom:10px; }
-  .module { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2e36; }
+
+  .panel {
+    background:#1a1d23;
+    border:1px solid #2a2e36;
+    border-radius:12px;
+    padding:16px;
+  }
+
+  .module {
+    padding:6px 0;
+    border-bottom:1px solid #2a2e36;
+    display:flex;
+    justify-content:space-between;
+  }
   .module:last-child { border-bottom:none; }
+
   .status { width:10px; height:10px; border-radius:50%; }
   .online { background:#4da6ff; }
   .offline { background:#ff4d4d; }
   .build { background:#ffd700; animation:pulse 1s infinite alternate; }
+
   @keyframes pulse { from{opacity:0.4} to{opacity:1} }
+
+  .search {
+    width:100%; padding:10px;
+    background:#1a1d23; border:1px solid #2a2e36;
+    border-radius:8px; color:#e6e9ef;
+    margin-bottom:20px;
+  }
+
+  .struct-list { font-size:12px; line-height:1.5; }
+  .struct-list span { color:#4da6ff; }
 </style>
 </head>
 
 <body>
-<h1>⚡ IKI1UC · RUN21 · Drei‑Pools</h1>
+
+<h1>⚡ IKI1UC · FIREICE · Build Dashboard</h1>
+<h2>Build‑Übersicht für MCFLY‑ORBIT · ALL NATURA · 3‑9‑81</h2>
 
 <div class="wrap">
 
-  <input id="search" placeholder="🔍 Modul suchen…" 
-         style="width:100%;padding:10px;background:#1a1d23;border:1px solid #2a2e36;border-radius:8px;margin-bottom:20px;color:#e6e9ef">
+  <input id="search" class="search" placeholder="🔍 Modul suchen …">
 
   <div class="grid">
+
+    <!-- FIRE -->
     <div class="panel">
-      <h2>🔥 FIRE · Engine/Pipeline</h2>
+      <h2>🔥 FIRE · Engine / Orbit / Pipeline</h2>
       <div id="fireList"></div>
     </div>
 
+    <!-- ICE -->
     <div class="panel">
-      <h2>❄️ ICE · RAW/ROM/RAM/CPU</h2>
+      <h2>❄️ ICE · RAW / ROM / RAM / CPU / GPU</h2>
       <div id="iceList"></div>
     </div>
 
+    <!-- ORT -->
     <div class="panel">
-      <h2>🌍 ORT · Pfad/Matrix</h2>
+      <h2>🌍 ORT · Pfad / Matrix / Natura</h2>
       <div id="ortList"></div>
+    </div>
+
+  </div>
+
+  <div class="panel" style="margin-top:20px;">
+    <h2>📁 Projektstruktur</h2>
+    <div class="struct-list">
+      <p><span>/ort</span> — 3hit90.js, 3×1.js, 3×3.js, 9×9.js</p>
+      <p><span>/pipeline</span> — pipe.pipeline.js, raid.pipeline.js, stage.pipeline.js</p>
+      <p><span>/engine</span> — index.html, arbeit.js, work.js</p>
+      <p><span>/raum</span> — NC.room, ANKER.room, TMP.tmp</p>
+      <p><span>/analyse</span> — respos, continuum, interpretation</p>
+      <p><span>/basis</span> — geo.js, gleichung.js, hall.rad.js</p>
     </div>
   </div>
 
 </div>
 
 <script>
-// =====================================================
-// MODULE‑SCAN aus drei Pools: api/, markt/, ort/
-// =====================================================
+// ===============================
+// MODULES – FIRE / ICE / ORT
+// ===============================
 const MODULES = [
-  // FIRE (Engine/Pipeline)
-  { name:'3×1', path:'api/3×1.js', category:'fire', status:'online' },
-  { name:'3×3', path:'api/3×3.js', category:'fire', status:'online' },
-  { name:'9×9', path:'api/9×9.js', category:'fire', status:'online' },
-  { name:'Pipeline9', path:'markt/pipe.pipeline.js', category:'fire', status:'online' },
-  { name:'Raid', path:'markt/raid.pipeline.js', category:'fire', status:'online' },
-
-  // ICE (RAW/ROM/RAM/CPU)
-  { name:'cpu.raw', path:'markt/cpu.raw.js', category:'ice', status:'online' },
-  { name:'ram.raw', path:'markt/ram.raw.js', category:'ice', status:'online' },
-  { name:'rom.raw', path:'markt/rom.raw.js', category:'ice', status:'online' },
-  { name:'gpu.raw', path:'markt/gpu.raw.js', category:'ice', status:'online' },
-
-  // ORT (Pfad/Matrix)
-  { name:'3hoch3', path:'ort/3hoch3_respos.json', category:'ort', status:'online' },
-  { name:'9hoch9', path:'ort/9hoch9_respos.json', category:'ort', status:'online' },
-  { name:'NC.room', path:'ort/NC.room', category:'ort', status:'online' },
-  { name:'quant‑triangle', path:'ort/quant-triangle-analysis.json', category:'ort', status:'online' },
-];
-
-// =====================================================
-// Render‑Funktion
-// =====================================================
-function render(filter='') {
-  const f = filter.toLowerCase();
-  const fire = MODULES.filter(m => m.category==='fire' && m.name.toLowerCase().includes(f));
-  const ice  = MODULES.filter(m => m.category==='ice'  && m.name.toLowerCase().includes(f));
-  const ort  = MODULES.filter(m => m.category==='ort'  && m.name.toLowerCase().includes(f));
-
-  document.getElementById('fireList').innerHTML = fire.map(m => item(m)).join('');
-  document.getElementById('iceList').innerHTML  = ice.map(m => item(m)).join('');
-  document.getElementById('ortList').innerHTML  = ort.map(m => item(m)).join('');
-}
-
-function item(m) {
-  return `
-    <div class="module">
-      <span>${m.name}<br><small>${m.path}</small></span>
-      <span class="status ${m.status}"></span>
-    </div>
-  `;
-}
-
-document.getElementById('search').addEventListener('input', e => render(e.target.value));
-render();
-</script>
-
-</body>
-</html>
+  // FIRE
+  { name:'MCFLY‑ORBIT Engine', path:'engine/index.html', category:'fire', status:'online' },
+  { name:'Pipeline9', path:'pipeline/pipe.pipeline.js', category:'
